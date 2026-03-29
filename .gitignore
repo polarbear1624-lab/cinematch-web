@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.db
+data/
+ml-latest-small/
+.vscode/
+!models/similarity_matrix_lite.pkl
+!models/movies_list_lite.pkl
