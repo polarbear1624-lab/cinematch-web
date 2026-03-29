@@ -134,3 +134,21 @@ def recommend_with_collaborative(movie_title: str):
 #         },
 #         "system_notes": "Hybrid Engine successfully combined Collaborative and NLP models."
 #     }
+# --- LITE HYBRID ROUTE (Safe for Render Free Tier) ---
+@app.get("/recommendations/hybrid/")
+def recommend_hybrid(movie_title: str, genre: str = "All Genres", decade: str = "Any Time"):
+    # Ask the Hive Mind (Collaborative)
+    hive_mind_titles = collab_recommender.get_recommendations(movie_title, top_n=5)
+    
+    # Ask the Content AI (Substituting for NLP to save memory)
+    ai_titles = recommender.get_recommendations(movie_title, top_n=5)
+    
+    # Package it exactly how the React frontend expects it!
+    return {
+        "searched_movie": movie_title,
+        "recommendations": {
+            "because_you_like_the_story_vibe": ai_titles,
+            "because_people_with_your_taste_watched": hive_mind_titles
+        },
+        "system_notes": "Lite Hybrid Engine running (Content AI + Collaborative)."
+    }
