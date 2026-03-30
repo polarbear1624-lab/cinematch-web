@@ -6,3 +6,5 @@ ml-latest-small/
 .vscode/
 !models/similarity_matrix_lite.pkl
 !models/movies_list_lite.pkl
+models/similarity_matrix.pkl
+*.pkl

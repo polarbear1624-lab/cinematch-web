@@ -151,7 +151,8 @@ export default function App() {
     setTasteMovies([]);
 
     try {
-      const API_URL = `https://cinematch-web.onrender.com`;
+      // Use the deployed Render backend instead of localhost
+      const API_URL = `https://cinematch-web.onrender.com/recommendations/hybrid/?movie_title=${encodeURIComponent(query)}&genre=${encodeURIComponent(selectedGenre)}&decade=${encodeURIComponent(selectedDecade)}`;
       const response = await fetch(API_URL);
       const data = await response.json();
 
@@ -169,7 +170,8 @@ export default function App() {
     setIsLoading(true);
     setBrowseMovies([]);
     try {
-      const API_URL = `https://cinematch-web.onrender.com`;
+      // Use the deployed Render backend instead of localhost
+      const API_URL = `https://cinematch-web.onrender.com/browse/?genre=${encodeURIComponent(selectedGenre)}&decade=${encodeURIComponent(selectedDecade)}`;
       const response = await fetch(API_URL);
       const data = await response.json();
       

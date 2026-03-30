@@ -26,8 +26,8 @@ app.add_middleware(
 )
 
 # 2. Train ALL the ML models when the server starts
-#recommender.train_model()
-#collab_recommender.train_model() 
+recommender.train_model()
+collab_recommender.train_model() 
 # nlp_recommender.train_model() # <-- DISABLED FOR RENDER FREE TIER
 
 # 3. Helper function to open and close the database connection safely
