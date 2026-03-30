@@ -8,3 +8,5 @@ ml-latest-small/
 !models/movies_list_lite.pkl
 models/similarity_matrix.pkl
 *.pkl
+!data/tmdb_5000_movies.csv
+!data/ratings.csv
