@@ -151,7 +151,7 @@ export default function App() {
     setTasteMovies([]);
 
     try {
-      const API_URL = `http://127.0.0.1:8000/recommendations/hybrid/?movie_title=${query}&genre=${selectedGenre}&decade=${selectedDecade}`;
+      const API_URL = `https://cinematch-web.onrender.com`;
       const response = await fetch(API_URL);
       const data = await response.json();
 
@@ -169,7 +169,7 @@ export default function App() {
     setIsLoading(true);
     setBrowseMovies([]);
     try {
-      const API_URL = `http://127.0.0.1:8000/browse/?genre=${selectedGenre}&decade=${selectedDecade}&limit=10`;
+      const API_URL = `https://cinematch-web.onrender.com`;
       const response = await fetch(API_URL);
       const data = await response.json();
       
