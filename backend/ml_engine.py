@@ -42,7 +42,7 @@ class MovieRecommender:
         except Exception as e:
             print(f"❌ Error training model: {e}. Did you put the CSV in the right place?")
 
-    def get_recommendations(self, movie_title, top_n=5):
+    def get_recommendations(self, movie_title, target_genre="All Genres", target_decade="Any Time", top_n=5):
         if not self.is_ready:
             return ["Error: The brain is still booting up!"]
 
@@ -59,12 +59,34 @@ class MovieRecommender:
         # Sort the movies based on their similarity score (Highest to lowest)
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-        # Get the IDs of the top 5 most similar movies 
-        # (We skip the 1st one because it will be the exact movie the user searched for!)
-        top_movies_indices = [i[0] for i in sim_scores[1:top_n+1]]
-
-        # Return the actual titles of those top movies
-        recommendations = self.df.iloc[top_movies_indices]['original_title'].tolist()
+        recommendations = []
+        for i, score in sim_scores[1:]:
+            row = self.df.iloc[i]
+            
+            # 1. Apply Genre Filter
+            if target_genre != "All Genres":
+                if pd.isna(row.get('genres')) or target_genre.lower() not in str(row['genres']).lower():
+                    continue
+                    
+            # 2. Apply Decade Filter
+            if target_decade != "Any Time":
+                start_year = int(target_decade[:4])
+                end_year = start_year + 9
+                try:
+                    rel_date = str(row.get('release_date', ''))
+                    if len(rel_date) >= 4 and rel_date[:4].isdigit():
+                        year = int(rel_date[:4])
+                        if year < start_year or year > end_year:
+                            continue
+                    else:
+                        continue
+                except:
+                    continue
+            
+            recommendations.append(row['original_title'])
+            if len(recommendations) >= top_n:
+                break
+                
         return recommendations
 
 # Create an instance of the brain so our API can use it

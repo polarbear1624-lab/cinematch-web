@@ -138,10 +138,10 @@ def recommend_with_collaborative(movie_title: str):
 @app.get("/recommendations/hybrid/")
 def recommend_hybrid(movie_title: str, genre: str = "All Genres", decade: str = "Any Time"):
     # Ask the Hive Mind (Collaborative)
-    hive_mind_titles = collab_recommender.get_recommendations(movie_title, top_n=5)
+    hive_mind_titles = collab_recommender.get_recommendations(movie_title, target_genre=genre, target_decade=decade, top_n=5)
     
     # Ask the Content AI (Substituting for NLP to save memory)
-    ai_titles = recommender.get_recommendations(movie_title, top_n=5)
+    ai_titles = recommender.get_recommendations(movie_title, target_genre=genre, target_decade=decade, top_n=5)
     
     # Package it exactly how the React frontend expects it!
     return {
@@ -152,18 +152,34 @@ def recommend_hybrid(movie_title: str, genre: str = "All Genres", decade: str = 
         },
         "system_notes": "Lite Hybrid Engine running (Content AI + Collaborative)."
     }
-    # --- LITE BROWSE ROUTE (Safe for Render Free Tier) ---
+    # --- FIXED BROWSE ROUTE ---
 @app.get("/browse/")
-def browse_movies(genre: str = "All Genres", decade: str = "Any Time", limit: int = 10, db: Session = Depends(get_db)):
-    # Safely search the database instead of loading the massive NLP dataframe
-    query = db.query(models.Movie)
+def browse_movies(genre: str = "All Genres", decade: str = "Any Time", limit: int = 15):
+    if not recommender.is_ready:
+        return {"movies": []}
+    
+    df = recommender.df.copy()
     
     if genre != "All Genres":
-        query = query.filter(models.Movie.genre.ilike(f"%{genre}%"))
+        df = df[df['genres'].str.contains(genre, case=False, na=False)]
         
-    movies = query.limit(limit).all()
-    
-    # Extract just the titles to match what the React frontend expects
-    movie_titles = [movie.title for movie in movies] if movies else []
-    
-    return {"movies": movie_titles}
+    if decade != "Any Time":
+        start_year = int(decade[:4])
+        end_year = start_year + 9
+        mask = []
+        for d in df['release_date']:
+            try:
+                yr = int(str(d)[:4])
+                mask.append(start_year <= yr <= end_year)
+            except:
+                mask.append(False)
+        df = df[mask]
+        
+    if df.empty:
+        return {"movies": []}
+        
+    if 'popularity' in df.columns:
+        df = df.sort_values(by='popularity', ascending=False)
+        
+    top_movies = df['original_title'].head(limit).tolist()
+    return {"movies": top_movies}

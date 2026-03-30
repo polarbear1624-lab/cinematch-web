@@ -14,6 +14,7 @@ class CollaborativeRecommender:
     def __init__(self):
         self.user_movie_matrix = None
         self.ratings_df = None
+        self.movies_df = None
         self.is_ready = False
 
     def train_model(self):
@@ -36,6 +37,7 @@ class CollaborativeRecommender:
             ratings_count = pd.DataFrame(df.groupby('title')['rating'].mean())
             ratings_count['num_ratings'] = df.groupby('title')['rating'].count()
             self.ratings_df = ratings_count
+            self.movies_df = movies.set_index('title')
 
             self.is_ready = True
             print("✅ Hive Mind is fully synchronized!")
@@ -43,7 +45,7 @@ class CollaborativeRecommender:
         except Exception as e:
             print(f"❌ Error training collaborative model: {e}")
 
-    def get_recommendations(self, movie_title, min_ratings=50, top_n=5):
+    def get_recommendations(self, movie_title, target_genre="All Genres", target_decade="Any Time", min_ratings=50, top_n=5):
         if not self.is_ready:
             return ["Error: The Hive Mind is still booting up!"]
 
@@ -68,7 +70,37 @@ class CollaborativeRecommender:
         corr_movie = corr_movie.join(self.ratings_df['num_ratings'])
         recommended = corr_movie[corr_movie['num_ratings'] > min_ratings].sort_values('Correlation', ascending=False)
 
-        top_titles = recommended.iloc[1:top_n+1].index.tolist()
+        top_titles = []
+        for title in recommended.index:
+            if title == exact_title:
+                continue
+                
+            row = self.movies_df.loc[title] if title in self.movies_df.index else None
+            if row is not None:
+                # Handle possible duplicated titles
+                if isinstance(row, pd.DataFrame):
+                    row = row.iloc[0]
+                    
+                # 1. Apply Genre Filter
+                if target_genre != "All Genres":
+                    if pd.isna(row.get('genres')) or target_genre.lower() not in str(row['genres']).lower():
+                        continue
+                        
+                # 2. Apply Decade Filter
+                if target_decade != "Any Time":
+                    start_year = int(target_decade[:4])
+                    end_year = start_year + 9
+                    try:
+                        year = int(str(title)[-5:-1])
+                        if year < start_year or year > end_year:
+                            continue
+                    except:
+                        continue
+                        
+            top_titles.append(title)
+            if len(top_titles) >= top_n:
+                break
+
         return top_titles
 
 # Create an instance so the API can use it
