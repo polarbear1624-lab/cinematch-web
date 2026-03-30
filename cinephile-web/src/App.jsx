@@ -4,7 +4,7 @@ import Auth from './Auth';
 import { supabase } from './supabaseClient'; 
 import AccountCenter from './AccountCenter';
 
-const TMDB_API_KEY = "9569bc97a9e00820c7802554d1a5ad5f"; 
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY; 
 const GENRES = ["All Genres", "Action", "Comedy", "Drama", "Sci-Fi", "Romance", "Horror", "Thriller"];
 const DECADES = ["Any Time", "2020s", "2010s", "2000s", "1990s", "1980s"];
 
