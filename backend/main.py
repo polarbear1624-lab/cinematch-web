@@ -152,3 +152,18 @@ def recommend_hybrid(movie_title: str, genre: str = "All Genres", decade: str = 
         },
         "system_notes": "Lite Hybrid Engine running (Content AI + Collaborative)."
     }
+    # --- LITE BROWSE ROUTE (Safe for Render Free Tier) ---
+@app.get("/browse/")
+def browse_movies(genre: str = "All Genres", decade: str = "Any Time", limit: int = 10, db: Session = Depends(get_db)):
+    # Safely search the database instead of loading the massive NLP dataframe
+    query = db.query(models.Movie)
+    
+    if genre != "All Genres":
+        query = query.filter(models.Movie.genre.ilike(f"%{genre}%"))
+        
+    movies = query.limit(limit).all()
+    
+    # Extract just the titles to match what the React frontend expects
+    movie_titles = [movie.title for movie in movies] if movies else []
+    
+    return {"movies": movie_titles}
