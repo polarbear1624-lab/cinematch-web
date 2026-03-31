@@ -48,10 +48,12 @@ class CollaborativeRecommender:
     def get_recommendations(self, movie_title, target_genre="All Genres", target_decade="Any Time", min_ratings=50, top_n=5):
         if not self.is_ready:
             return ["Error: The Hive Mind is still booting up!"]
+            
+        clean_title = str(movie_title).strip()
 
         # --- THE FIX: SMART SEARCH ---
         # Look through all columns and find one that contains the typed text (ignoring capitals)
-        matching_movies = [col for col in self.user_movie_matrix.columns if movie_title.lower() in str(col).lower()]
+        matching_movies = [col for col in self.user_movie_matrix.columns if clean_title.lower() in str(col).lower()]
         
         if not matching_movies:
             # Return an empty list instead of a fake movie title

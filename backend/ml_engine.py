@@ -46,12 +46,13 @@ class MovieRecommender:
         if not self.is_ready:
             return ["Error: The brain is still booting up!"]
 
+        clean_title = str(movie_title).strip()
+
         try:
             # Find the exact row number (index) of the movie the user searched for
-            # We use .lower() to make the search case-insensitive
-            idx = self.df[self.df['original_title'].str.lower() == movie_title.lower()].index[0]
+            idx = self.df[self.df['original_title'].str.lower() == clean_title.lower()].index[0]
         except IndexError:
-            return [f"Sorry, '{movie_title}' is not in our 5000-movie database."]
+            return [f"Sorry, '{clean_title}' is not in our 5000-movie database."]
 
         # Get the similarity scores for this specific movie against all other 4999 movies
         sim_scores = list(enumerate(self.similarity_matrix[idx]))
