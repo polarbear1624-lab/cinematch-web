@@ -219,8 +219,13 @@ export default function App() {
     return (
       <div className="app-container">
         <header className="hero-section">
-          <h1 className="hero-logo">CINEMATCH</h1>
-          <span className="hero-tagline">YOUR AI FILM CURATOR</span>
+          <div className="hero-content">
+            <h1 className="hero-logo">CINE<span className="accent">MATCH</span></h1>
+            <span className="hero-tagline">YOUR AI FILM CURATOR</span>
+            <p className="hero-description" style={{ marginBottom: "40px" }}>
+              Experience the future of cinema discovery. CineMatch leverages advanced Machine Learning—using deep Content-Based analysis for story vibes and Collaborative Filtering to map the viewing patterns of your taste-twins. Log in below to access the AI brain and curate highly personalized recommendations instantly.
+            </p>
+          </div>
         </header>
         <Auth onLogin={(loggedInUser) => setUser(loggedInUser)} />
       </div>
@@ -256,7 +261,13 @@ export default function App() {
           )}
         </div>
 
-        <h1 className="hero-logo">CINEMATCH</h1>
+        <div className="hero-content">
+          <h1 className="hero-logo">CINE<span className="accent">MATCH</span></h1>
+          <span className="hero-tagline">YOUR AI FILM CURATOR</span>
+          <p className="hero-description">
+            Experience the future of cinema discovery. CineMatch leverages advanced Machine Learning—using deep Content-Based analysis for story vibes and Collaborative Filtering to map the viewing patterns of your taste-twins. Just search for a movie you love, and our AI brain will curate highly personalized recommendations instantly.
+          </p>
+        </div>
       </header>
 
       {/* TABS */}
